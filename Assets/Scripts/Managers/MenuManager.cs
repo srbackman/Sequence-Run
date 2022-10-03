@@ -1,16 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
     private GameManager gameManager;
 
     [SerializeField] private GameObject _mainMenu;
+    [Space]
     [SerializeField] private GameObject _inGameHud;
+    [Space]
     [SerializeField] private GameObject _pauseMenu;
+    [Space]
     [SerializeField] private GameObject _gameOverMenu;
+    [SerializeField] private TMP_Text _causeOfDeathText;
+    [Space]
     [SerializeField] private GameObject _continueMenu;
+    [Space]
     [SerializeField] private GameObject _winnerMenu;
 
     private GameObject _currentMenu;
@@ -25,51 +32,49 @@ public class MenuManager : MonoBehaviour
 
     }
 
-    private void CurrentMenuSwitch(GameObject newCurrentMenu)
+    private void CurrentMenuSwitch(GameObject newCurrentMenu, GameState gameState)
     {
         _currentMenu.SetActive(false);
         _currentMenu = newCurrentMenu;
         _currentMenu.SetActive(true);
+
+        gameManager._gameState = gameState;
     }
 
     public void GoToMainMenu()
     {
-        CurrentMenuSwitch(_mainMenu);
-        gameManager._inGameStatus = false;
+        CurrentMenuSwitch(_mainMenu, GameState.pause);
 
     }
 
     public void GoToInGameHud()
     {
-        CurrentMenuSwitch(_inGameHud);
-        gameManager._inGameStatus = true;
+        CurrentMenuSwitch(_inGameHud, GameState.inGame);
 
     }
 
     public void GoToPauseMenu()
     {
-        CurrentMenuSwitch(_pauseMenu);
-        gameManager._inGameStatus = false;
+        CurrentMenuSwitch(_pauseMenu, GameState.pause);
 
     }
 
-    public void GoToGameOverMenu()
+    public void GoToGameOverMenu(string deathText)
     {
-        CurrentMenuSwitch(_gameOverMenu);
-        gameManager._inGameStatus = false;
-
+        CurrentMenuSwitch(_gameOverMenu, GameState.pause);
+        _causeOfDeathText.text = deathText;
+        gameManager.StopTiming();
     }
 
     public void GoToContinueMenu()
     {
-        CurrentMenuSwitch(_continueMenu);
-        gameManager._inGameStatus = false;
+        CurrentMenuSwitch(_continueMenu, GameState.pause);
+
     }
 
     public void GoToWinnerMenu()
     {
-        CurrentMenuSwitch(_winnerMenu);
-        gameManager._inGameStatus = false;
+        CurrentMenuSwitch(_winnerMenu, GameState.pause);
 
     }
 }

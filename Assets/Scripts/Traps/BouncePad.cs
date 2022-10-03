@@ -16,6 +16,6 @@ public class BouncePad : MonoBehaviour
         PlayerMovement playerMovement = collision.transform.GetComponent<PlayerMovement>();
         if (!playerMovement) return;
 
-        playerMovement.AddBounceForce(transform.TransformDirection(transform.up) * _bounceForce);
+        playerMovement.AddBounceForce(transform.up * _bounceForce);
     }
 }

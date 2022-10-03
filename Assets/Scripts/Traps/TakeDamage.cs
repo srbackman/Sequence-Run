@@ -5,14 +5,15 @@ using UnityEngine;
 public class TakeDamage : MonoBehaviour
 {
     private MenuManager menuManager;
+    [SerializeField] private string _deathText = "You were pierced by a spike.";
 
     private void Awake()
     {
         menuManager = FindObjectOfType<MenuManager>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        menuManager.GoToGameOverMenu();
+        menuManager.GoToGameOverMenu(_deathText);
     }
 }

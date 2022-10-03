@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class OneWayGravField : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        
+        collision.transform.rotation = Quaternion.Euler(180, 0, 0);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        
+        collision.transform.rotation = Quaternion.Euler(0, 0, 0);
     }
+
 }

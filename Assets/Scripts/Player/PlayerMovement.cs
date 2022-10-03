@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _jumpForce = 5f;
     [SerializeField] private float _slowdownForce = 0.3f;
     [SerializeField] private int _airDiff = 2;
+    [SerializeField] private float _jumpCooldown = 0.2f;
     [Space]
     [SerializeField] private float _runningSpriteDuration = 0.3f;
     [Space]
@@ -32,20 +33,23 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _collisionSafeGuardDownDistance;
     [SerializeField] private float _collisionSafeGuardRadius;
 
+    private float _jumpTimer;
     private float _runningSpriteTimer;
-    private Vector2 _playerVelocity = Vector2.zero;
+    public Vector2 _playerVelocity = Vector2.zero;
     private Vector2 _bounceForce = Vector2.zero;
     private bool _leftLook = true;
+    private CapsuleCollider2D _collider2D;
 
     private void Awake()
     {
+        _collider2D = GetComponent<CapsuleCollider2D>();
         animationCollection = GetComponent<PlayerAnimationCollection>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     public void MovePlayer(float horizontal, bool jump)
     {   
-        transform.position += new Vector3(0f, -0.01f);
+        //transform.position += transform.TransformDirection(new Vector3(0f, -0.2f)) * Time.deltaTime;
         bool groundedState = GroundCheck();
 
         PlayerAnimationSelector(horizontal, groundedState);
@@ -58,11 +62,10 @@ public class PlayerMovement : MonoBehaviour
         if (_bounceForce != Vector2.zero)
         {
             _playerVelocity = _bounceForce;
-            transform.localPosition += transform.TransformDirection(_playerVelocity * Time.deltaTime);
             _bounceForce = Vector2.zero;
         }
-        else
-            transform.localPosition += transform.TransformDirection(_playerVelocity * Time.deltaTime);
+        
+        transform.localPosition += transform.TransformDirection(_playerVelocity) * Time.deltaTime;
 
         /*Collision check*/
         KeepColliderClear();
@@ -101,6 +104,10 @@ public class PlayerMovement : MonoBehaviour
                 _spriteRenderer.sprite = animationCollection._jumpSprite;
                 break;
         }
+        if (animationType == AnimationType.jump)
+        { _collider2D.size = new Vector2(0.1f, 0.375f); }
+        else
+        { _collider2D.size = new Vector2(0.1f, 0.475f); }
     }
 
     /*Slowdown horizontal*/
@@ -163,8 +170,10 @@ public class PlayerMovement : MonoBehaviour
     /*Calculate jump*/
     private void CalculateJump(bool groundedState, bool jump)
     {
-        if (groundedState && jump)
+        _jumpTimer -= Time.deltaTime;
+        if (_jumpTimer <= 0 && groundedState && jump)
         {
+            _jumpTimer = _jumpCooldown;
             _playerVelocity += new Vector2(0f, _jumpForce);
         }
     }
@@ -184,28 +193,28 @@ public class PlayerMovement : MonoBehaviour
     private void KeepColliderClear()
     {
         /*Raycast sides.*/
-        PushAway(new Vector2(1, 0), _collisionSafeGuardSideDistance);
-        PushAway(new Vector2(-1, 0), _collisionSafeGuardSideDistance);
+        PushAway(transform.TransformDirection(new Vector2(1, 0)), _collisionSafeGuardSideDistance);
+        PushAway(transform.TransformDirection(new Vector2(-1, 0)), _collisionSafeGuardSideDistance);
         /*Raycast up and down.*/
-        PushAway(new Vector2(0, 1), _collisionSafeGuardUpDistance);
-        PushAway(new Vector2(0, -1), _collisionSafeGuardDownDistance);
+        PushAway(transform.TransformDirection(new Vector2(0, 1)), _collisionSafeGuardUpDistance);
+        PushAway(transform.TransformDirection(new Vector2(0, -1)), _collisionSafeGuardDownDistance);
     }
 
-    private void PushAway(Vector2 direction, float maxDistance)
+    private void PushAway(Vector3 direction, float maxDistance)
     {
         int i = 0;
-        while (Physics2D.OverlapCircle(transform.position + (Vector3)(direction * maxDistance), _collisionSafeGuardRadius, _validSurfaces))
+        while (Physics2D.OverlapCircle(transform.position + (direction * maxDistance), _collisionSafeGuardRadius, _validSurfaces))
         {
-            transform.position += (Vector3)((direction * -1) * 0.01f);
+            transform.position += ((direction * -1) * 0.01f);
             i++;
         }
-        if (i > 10)
+        if (i > 2)
         {
             if (direction.x != 0) //X
             {
                 _playerVelocity = new Vector3(0f, _playerVelocity.y);
             }
-            if (direction.y != 0) //Y
+            if (direction.y != 0 && _playerVelocity.y <= 0) //Y
             {
                 _playerVelocity = new Vector3(_playerVelocity.x, 0f);
             }
@@ -214,9 +223,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)(new Vector2(1, 0) * _collisionSafeGuardSideDistance));
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)(new Vector2(-1, 0) * _collisionSafeGuardSideDistance));
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)(new Vector2(0, 1) * _collisionSafeGuardUpDistance));
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)(new Vector2(0, -1) * _collisionSafeGuardDownDistance));
+        Gizmos.DrawLine(transform.position, transform.position + (transform.TransformDirection(new Vector2(1, 0)) * _collisionSafeGuardSideDistance));
+        Gizmos.DrawLine(transform.position, transform.position + (transform.TransformDirection(new Vector2(-1, 0)) * _collisionSafeGuardSideDistance));
+        Gizmos.DrawLine(transform.position, transform.position + (transform.TransformDirection(new Vector2(0, 1)) * _collisionSafeGuardUpDistance));
+        Gizmos.DrawLine(transform.position, transform.position + (transform.TransformDirection(new Vector2(0, -1)) * _collisionSafeGuardDownDistance));
     }
 }

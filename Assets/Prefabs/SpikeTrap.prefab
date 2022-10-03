@@ -101,13 +101,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spikeTransform: {fileID: 733911859929773815}
   _stayUp: 0
-  _upVector: {x: 0, y: 0.5}
+  _upVector: {x: 0, y: 4.8}
   _downVector: {x: 0, y: 0}
   _triggerTime: 2
   _timer: 0
-  _upSpeed: 5
-  _downSpeed: 0.5
-  _stayUpTime: 0.2
+  _upSpeed: 40
+  _downSpeed: 10
+  _stayUpTime: 0.5
   _warningColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!61 &733911859824176526
 BoxCollider2D:
@@ -261,3 +261,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e806eda1fe4849c41a98742e6259c5e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _deathText: You were pierced by a spike.

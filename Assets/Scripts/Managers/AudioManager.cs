@@ -4,15 +4,32 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private AudioClip[] _musicClips;
+    [SerializeField] private AudioSource _musicSource;
+    [Space]
+    [SerializeField] private AudioClip[] _audioClips;
+    [SerializeField] private AudioSource _audioSource;
+
+
+    private int _currentSlot = 0;
+
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void PlayOneShotAudio()
+    {
+
+    }
+
+    public void PlayMusic(int slot)
+    {
+
     }
 }

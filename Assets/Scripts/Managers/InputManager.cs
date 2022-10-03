@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
 {
     private PlayerMovement playerMovement;
     private GameManager gameManager;
+    private MenuManager menuManager;
     private PlayerInputactions inputActions;
     
 
@@ -13,7 +14,7 @@ public class InputManager : MonoBehaviour
     {
         gameManager = FindObjectOfType<GameManager>();
         playerMovement = FindObjectOfType<PlayerMovement>();
-
+        menuManager = FindObjectOfType<MenuManager>();
     }
 
     private void OnEnable()
@@ -25,9 +26,14 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (!gameManager._inGameStatus) return;
+        if (gameManager._gameState != GameState.inGame || gameManager._countdownOn) return;
         bool jumpStatus = inputActions.Player.Jump.IsPressed();
         float movementDirection = inputActions.Player.Move.ReadValue<Vector2>().x;
         playerMovement.MovePlayer(movementDirection, jumpStatus);
+
+        if (inputActions.Player.Reset.WasPressedThisFrame())
+        { gameManager.RestartLevel(); }
+        if (inputActions.Player.Escape.WasPressedThisFrame())
+        { menuManager.GoToPauseMenu(); }
     }
 }
