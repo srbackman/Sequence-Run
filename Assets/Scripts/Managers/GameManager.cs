@@ -42,11 +42,16 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
-        Application.targetFrameRate = 60;
 
         _countdownTimerText.text = "";
         _levelTimerText.text = "";
 
+    }
+
+    private void Start()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
     }
 
     void Update()
